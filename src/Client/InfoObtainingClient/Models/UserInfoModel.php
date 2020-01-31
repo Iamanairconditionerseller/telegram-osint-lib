@@ -13,11 +13,11 @@ class UserInfoModel
      */
     public $accessHash;
     /**
-     * @var string
+     * @var string|null
      */
     public $username;
     /**
-     * @var string
+     * @var string|null
      */
     public $bio;
     /**

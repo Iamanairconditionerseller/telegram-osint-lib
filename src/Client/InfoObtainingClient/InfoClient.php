@@ -193,7 +193,7 @@ class InfoClient implements InfoObtainingClient
         $request = new get_full_user($channelId, $accessHash, $msgId, $userId);
         $cbUnpacker = function (AnonymousMessage $msg) use ($onComplete) {
             /** @see https://core.telegram.org/constructor/userFull */
-            if ($msg->getType() != 'userFull') {
+            if (!UserFull::isIt($msg)) {
                 $onComplete(null);
 
                 return;

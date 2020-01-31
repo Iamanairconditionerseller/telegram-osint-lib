@@ -11,6 +11,7 @@ use TelegramOSINT\MTSerialization\AnonymousMessage;
 use TelegramOSINT\Scenario\Models\GroupId;
 use TelegramOSINT\Scenario\Models\OptionalDateRange;
 use TelegramOSINT\TLMessage\TLMessage\ServerMessages\Contact\ResolvedPeer;
+use TelegramOSINT\TLMessage\TLMessage\ServerMessages\Messages\ChannelMessages;
 
 class GroupMessagesScenario extends InfoClientScenario
 {
@@ -162,17 +163,19 @@ class GroupMessagesScenario extends InfoClientScenario
     private function makeMessagesHandler(int $id, int $accessHash, int $limit): callable
     {
         return function (AnonymousMessage $anonymousMessage) use ($id, $accessHash, $limit) {
-            if ($anonymousMessage->getType() != 'messages.channelMessages') {
+            if (!ChannelMessages::isIt($anonymousMessage)) {
                 Logger::log(__CLASS__, "incorrect message type {$anonymousMessage->getType()}");
 
                 return;
             }
-            $users = $anonymousMessage->getValue('users');
+
+            $channelMessages = new ChannelMessages($anonymousMessage);
+            $users = $channelMessages->getUsers();
             foreach ($users as $user) {
-                if (!$user['username']) {
+                if (!$user->username) {
                     continue;
                 }
-                $this->userMap[$user['id']] = $user['username'];
+                $this->userMap[$user->id] = $user->username;
             }
 
             $messages = $anonymousMessage->getValue('messages');
